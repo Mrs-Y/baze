@@ -1,0 +1,215 @@
+SQL redosled
+
+SELECT kolone
+FROM tabela
+WHERE uslov za računanje
+GROUP BY kolona
+HAVING uslov za prikaz
+ORDER BY kolona ASC(DESC)
+LIMIT broj redova (od, broj redova)
+
+	• CREATE DATABASE DatabaseName;
+	• DROP DATABASE DatabaseName;
+	• USE DatabaseName;
+	• COLLATE - za latinicne karaktere
+	
+Kreiranje baze
+	• CREATE TABLE table_name(
+	column1 datatype,
+	column2 datatype,
+	column3 datatype,
+	.....
+	columnN datatype,
+	);
+	
+SQL ograničenja
+
+● NOT NULL – Kolona ne može sadržati NULL vrednost.
+● UNIQUE – Sve vrednosti u koloni su različite.
+● PRIMARY KEY - Kombinacija NOT NULL i UNIQUE.
+Jedinstveno odredjuje red.
+● FOREIGN KEY – Jedinstveno odreĎuje red druge tabele.
+● CHECK – Proverava da sve vrednosti u koloni zadovoljavaju
+odredjeni uslov.
+● DEFAULT – Postavlja podrazumevanu vrednost za kolonu
+kada vrednost nije navedena.
+● INDEX – Koristi se za brzo dobijanje informacija iz tabele.
+● PRIMARY KEY = NOT NULL + UNIQUE
+
+
+Za dodavanje, brisanje I modifikaciju kolona koristi se:
+	• ALTER TABLE table_name
+	ADD column_name datatype;
+	
+Dodavanje redova u tabeli
+	• INSERT INTO TABLE_NAME (column1, column2,
+	column3,...columnN)
+	VALUES (value1, value2, value3,...valueN);
+	column1, column2, column3,...columnN
+
+Brisanje tabele
+	• DROP TABLE table_name;
+
+Citanje podataka iz tabele
+	• SELECT column1, column2, columnN
+	FROM table_name;
+	
+	• SELECT DISTINCT - vraća različite vrednosti.
+	• SELECT DISTINCT column1, column2, ...
+	FROM table_name;
+	
+	• SELECT column1, column2, ...
+	FROM table_name
+	WHERE condition; /moze se kombinovati sa AND OR i NOT
+
+	• SELECT column_name(s)
+	FROM table_name
+	WHERE condition
+	LIMIT number;
+	
+	• SELECT column1, column2, ...
+	FROM table_name
+	ORDER BY column1, column2, ...
+	ASC|DESC;
+
+	• SELECT MIN(ime_kolone)
+	FROM ime_tabele
+	WHERE uslov;
+	
+	• SELECT MAX(ime_kolone)
+	FROM ime_tabele
+	WHERE uslov;
+
+	• SELECT MAX(kolona) AS ‘Novi naziv’
+	FROM ime_tabele
+	WHERE uslov;
+	
+	• SELECT COUNT(ime_kolone)
+	FROM ime_tabele
+	WHERE uslov;
+	
+	• SELECT AVG(ime_kolone)
+	FROM ime_tabele
+	WHERE uslov;
+
+	• SELECT SUM(ime_kolone)
+	FROM ime_tabele
+	WHERE uslov;
+	
+Da li kolona sadrzi podatak koji se slaze sa sablonom
+	• SELECT * FROM 'tabela' WHERE 'name' LIKE 'test%'
+
+Da li kolona sadrzi podatak iz prosledjene liste
+	• SELECT * FROM 'tabela' WHERE 'datum' IN ("2022-01-14", "2022-10-10")
+
+
+Promena vec postojecih redova u tabeli
+	• UPDATE 'tabela' SET 'name'="novo ime", 'broj'=2 WHERE 'datum'="2022-09-14"
+
+Za brisanje redova
+	• DETELE FROM 'tabela' WHERE 'name'="test2" AND 'datum'="2022-12-31"
+
+	• SELECT AVG('broj') AS prosek, 'datum' FROM 'tabela' GROUP BY 'datum'
+	• SELECT AVG('broj') AS prosek, 'datum' FROM 'tabela' GROUP BY 'datum' HAVING AVG('broj')>20
+
+FROM `tabela1` (INNER, LEFT, RIGHT) JOIN `tabela2` ON
+`tabela1`.`id1` = `tabela2`.`id2`
+
+
+Povezivanje 
+
+$conn = new mysqli("localhost","root","","imetabele");
+If(is_null($conn->connect_error)) { echo "Konekcija uspesna";} else {echo "Neuspesna konekcija. Greska: $con->connect_error";}
+
+Citanje podataka
+
+$res = $conn->query("SELECT * FROM 'tabela'");
+Var_dump($res);
+foreach($res as $row) {
+foreach ($row as $key=>$value) { echo "Kolona $key, vrednost reda $value";} }
+
+$res = $conn->query("SELECT * FROM 'tabela'");
+$red = $res->fetch_assoc();
+var_dump($red);
+
+Prosledjivanje podataka
+
+$str = $conn->real_escape_string('baza');
+$upit = "SELECT * FROM 'tabela' WHERE 'name'='$str'";
+$res = $conn->query($upit);
+$red = $res->fetch_assoc();
+Var_dump($red);
+
+
+SELECT/INSERT
+$str = $conn->real_escape_string('baza');
+$upit = "SELECT * FROM 'tabela' WHERE 'name'='$str'";
+$res = $conn->query($upit);
+$name="ime";
+$datum="2016-12-31";
+$broj=12;
+$id_knjiga=8;
+$upit = "INSERT INTO 'tabela' ('name','datum','broj', 'id_knjiga') VALUES ('$name', '$datum',$broj,$id_knjiga)";
+$res = $conn->query($upit);
+var_dump($res);
+
+UPDATE/DELETE
+$newname="novo ime";
+$id=4;
+$upit="UPDATE 'tabela' SET 'name'='$newname' WHERE 'id=$id";
+$res = $conn->query($upit);
+Var_dump($res);
+
+$id=8;
+$upit = "DELETE FROM 'tabela' WHERE 'id'=$id";
+$res=$conn->query($upit);
+var_dump($res);
+
+
+Prepared statements
+
+$upit = "INSERT INTO 'tabela'('name','datum','broj','id_knjiga') VALUES (?,?,?,?)";
+$statement = $conn->prepare($upit);
+$name ='name1'; $date='2002-12-21'; $num=31; $idk=6;
+$statement->bind_param("ssii",$name,$date,$num,$idk);
+$statement->execute();
+$name ='name2'; $date='2012-09-15'; $num=18; $idk=9;
+$statement->bind_param("ssii",$name,$date,$num,$idk);
+$statement->execute();
+
+
+SELECT upit koji ima LIKE u uslovu, procente stavljamo u promenljivu
+$upit="SELECT * FROM 'tabela' WHERE 'name' LIKE ?";
+$pr_name="%ime";
+$statement=$conn->prepare($upit);
+$statement->bind_param("s",$pt_name);
+$statement->execute();
+$result = $statement->get_result();
+
+Try,catch
+
+	function deljenje($a,$b) {
+		if($b===0) throw new Exception("Ne mozemo deliti nulom");
+		return $a/$b;
+		}
+	try {
+		echo deljenje(5,0);
+	} catch (Exception $e) {
+		echo "Greska:" . $e0>getMessage();
+	}
+	
+	
+Transakcije
+Try {
+	//upiti se ne izvrsavaju odmah
+	$conn->autocommit(FALSE);
+	$res = $conn->query($sql1);
+	$res = $conn->query($sql2);
+	
+	$conn->commit();
+	Echo "Uspeh";
+} catch (Exception $e) {
+	Echo 'greska:' . $e->getMessage();
+	$conn->rollback();
+}
+$conn->autocommit(TRUE);
