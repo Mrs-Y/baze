@@ -1,3 +1,13 @@
+Povezivanje na bazu
+<?php
+$conn = new mysqli("localhost", "root", "", "turisticka_agencija");
+if (is_null($conn->connect_error)) {
+    echo "Konekcija uspesna";
+} else {
+    echo "Neuspesna konekcija. Greska: $con->connect_error";
+}
+?>
+
 SQL redosled
 
 SELECT kolone
@@ -156,7 +166,7 @@ var_dump($res);
 UPDATE/DELETE
 $newname="novo ime";
 $id=4;
-$upit="UPDATE 'tabela' SET 'name'='$newname' WHERE 'id=$id";
+$upit="UPDATE 'tabela' SET 'name'='$newname' WHERE 'id'=$id";
 $res = $conn->query($upit);
 Var_dump($res);
 
@@ -182,7 +192,7 @@ SELECT upit koji ima LIKE u uslovu, procente stavljamo u promenljivu
 $upit="SELECT * FROM 'tabela' WHERE 'name' LIKE ?";
 $pr_name="%ime";
 $statement=$conn->prepare($upit);
-$statement->bind_param("s",$pt_name);
+$statement->bind_param("s",$pr_name);
 $statement->execute();
 $result = $statement->get_result();
 
